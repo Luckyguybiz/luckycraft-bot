@@ -1,7 +1,12 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+  ]
+});
 
 const CHANNELS = {
   java:          process.env.CHANNEL_JAVA,
@@ -27,7 +32,7 @@ const MESSAGES = {
 
 🌟 **INFO**
 > \`Server IP:\` **play.luckycraft.net**
-> \`Version:\` **1.19.4 - 1.21.11**`,
+> \`Version:\` **1.19.4 - 1.21.4**`,
 
   bedrock: `🎮 HOW TO JOIN | Bedrock edition
 *(Phone/Console)*
