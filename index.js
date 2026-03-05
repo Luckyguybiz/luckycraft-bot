@@ -118,6 +118,21 @@ async function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
+async function clearChannel(channel) {
+  try {
+    const messages = await channel.messages.fetch({ limit: 100 });
+    if (messages.size === 0) return 0;
+    for (const msg of messages.values()) {
+      try { await msg.delete(); } catch(e) { console.log('Could not delete msg: ' + e.message); }
+      await sleep(500);
+    }
+    return messages.size;
+  } catch(e) {
+    console.error('Error clearing channel: ' + e.message);
+    return 0;
+  }
+}
+
 async function postMessages() {
   console.log('Lucky Craft Bot starting...');
   let posted = 0;
@@ -126,8 +141,11 @@ async function postMessages() {
     try {
       const channel = await client.channels.fetch(channelId);
       if (!channel) { console.log('Not found: ' + key); continue; }
-      const msgs = await channel.messages.fetch({ limit: 5 });
-      if (msgs.size > 0) { console.log('Has messages: ' + key + ', skipping'); continue; }
+      
+      // Clear old messages first
+      const cleared = await clearChannel(channel);
+      if (cleared > 0) console.log('Cleared ' + cleared + ' messages from #' + key);
+      
       await channel.send(MESSAGES[key]);
       console.log('Posted to #' + key);
       posted++;
